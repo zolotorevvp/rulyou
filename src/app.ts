@@ -73,7 +73,7 @@ app.get('/get/:id', async (req, res) => {
         if (results.length > 0) {
             return res.status(200).json({
                 success: true,
-                user: results[0],
+                result: {users: results[0]},
             });
         } else {
             return res.status(404).json({
@@ -118,7 +118,7 @@ app.get('/get', async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            users: results,
+            result: {users: results}
         });
     } catch (error) {
         console.debug("ENDPOINT_GET", error);
@@ -188,13 +188,13 @@ app.delete('/delete/:id', async (req, res) => {
     const userId = req.params.id;
 
     try {
+
+        const [userCard] = await pool.query<RowDataPacket[]>('SELECT * FROM users WHERE id = ?', [userId]);
         const [result] = await pool.query<mysql.ResultSetHeader>('DELETE FROM users WHERE id = ?', [userId]);
         if (result.affectedRows > 0) {
             return res.status(200).json({
                 success: true,
-                result: {
-                    id: userId
-                },
+                result: userCard[0]
             });
         } else {
             return res.status(404).json({
@@ -216,7 +216,7 @@ app.delete('/delete', async (_req, res) => {
     try {
         await pool.query<RowDataPacket[]>('DELETE FROM users');
         return res.status(200).json({
-            success: true,
+            success: true
         });
     } catch (error) {
         console.debug("ENDPOINT_DELETE", error);

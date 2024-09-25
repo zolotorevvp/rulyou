@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "npx tsc",
-    "start": "node ./dist/app.js"
+    "start:dev": "node ./dist/app.js",
+    "start": "npx tsc && node ./dist/app.js"
   },
   "keywords": [],
   "author": "",

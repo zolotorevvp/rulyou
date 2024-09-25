@@ -36,6 +36,7 @@ app.post('/create', async (req, res) => {
             });
         }
     } catch (error) {
+        console.debug("ENDPOINT_CREATE", error);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error'
@@ -48,7 +49,7 @@ app.get('/get/:id', async (req, res) => {
     const userId = req.params.id;
 
     try {
-        const { full_name, role, efficiency } = req.query;
+        const {full_name, role, efficiency} = req.query;
         const values: any[] = [];
         let query = 'SELECT * FROM users WHERE id = ?';
 
@@ -81,6 +82,7 @@ app.get('/get/:id', async (req, res) => {
             });
         }
     } catch (error) {
+        console.debug("ENDPOINT_GET_ID", error);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error',
@@ -91,7 +93,7 @@ app.get('/get/:id', async (req, res) => {
 // GET /get
 app.get('/get', async (req, res) => {
     try {
-        const { full_name, role, efficiency } = req.query;
+        const {full_name, role, efficiency} = req.query;
         const values: any[] = [];
         let query = 'SELECT * FROM users';
         const conditions: string[] = [];
@@ -119,6 +121,7 @@ app.get('/get', async (req, res) => {
             users: results,
         });
     } catch (error) {
+        console.debug("ENDPOINT_GET", error);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error',
@@ -144,11 +147,15 @@ app.patch('/update/:id', async (req, res) => {
             updateSet.push('role = ?');
             values.push(updateData.role);
         }
+        if (updateData.efficiency) {
+            updateSet.push('efficiency = ?');
+            values.push(updateData.efficiency);
+        }
 
-        updateSet.push('id = ?');
         values.push(userId);
 
         query += ' ' + updateSet.join(', ');
+        query += ' WHERE id = ?';
 
         const [result] = await pool.query<mysql.ResultSetHeader>(query, values);
 
@@ -168,6 +175,7 @@ app.patch('/update/:id', async (req, res) => {
             });
         }
     } catch (error) {
+        console.debug("ENDPOINT_UPDATE", error);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error',
@@ -195,6 +203,7 @@ app.delete('/delete/:id', async (req, res) => {
             });
         }
     } catch (error) {
+        console.debug("ENDPOINT_DELETE_ID", error);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error',
@@ -210,6 +219,7 @@ app.delete('/delete', async (_req, res) => {
             success: true,
         });
     } catch (error) {
+        console.debug("ENDPOINT_DELETE", error);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error',
